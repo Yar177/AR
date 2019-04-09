@@ -1,6 +1,11 @@
 package com.yar.ar;
 
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +22,19 @@ public class MainActivity extends AppCompatActivity {
     Camera camera;
     boolean inPreview;
 
+    SensorManager sensorManager;
+    int orientationSensor;
+    float headingAngel;
+    float pitchAngel;
+    float rollAngel;
+
+    int accelerometerSensor;
+    float xAxis;
+    float yAxis;
+    float zAxis;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,29 +49,67 @@ public class MainActivity extends AppCompatActivity {
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        orientationSensor = Sensor.TYPE_ORIENTATION;
+        accelerometerSensor = Sensor.TYPE_ACCELEROMETER;
+
 
 
 
     }
+
+
+
+    final SensorEventListener sensorEvenetListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event.sensor.getType() == Sensor.TYPE_ORIENTATION){
+                headingAngel = event.values[0];
+                pitchAngel = event.values[1];
+                rollAngel = event.values[2];
+
+                Log.d(TAG, "headingAngel: " + String.valueOf(headingAngel));
+                Log.d(TAG, "pitchAngel: " + String.valueOf(pitchAngel));
+                Log.d(TAG, "rollAngel: " + String.valueOf(rollAngel));
+            }else  if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                xAxis = event.values[0];
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
 
 
     @Override
     protected void onResume() {
         super.onResume();
         camera = Camera.open();
-    }
+
+        sensorManager.registerListener(sensorEvenetListener, sensorManager.getDefaultSensor(orientationSensor),
+                SensorManager.SENSOR_DELAY_NORMAL);
+
+        sensorManager.registerListener(sensorEvenetListener, sensorManager.getDefaultSensor(accelerometerSensor),
+                SensorManager.SENSOR_DELAY_NORMAL);
+    };
 
 
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
+
+        sensorManager.unregisterListener(sensorEvenetListener);
+
         if (inPreview){
             camera.stopPreview();
         }
         camera.release();
         camera = null;
         inPreview = false;
-        super.onStop();
+        super.onPause();
 
     }
 
