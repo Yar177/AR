@@ -18,10 +18,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.TextView;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    TextView xAxisValue;
+    TextView yAxisValue;
+    TextView zAxisValue;
+    TextView headingValue;
+    TextView pitchValue;
+    TextView rollValue;
+    TextView altitudeValue;
+    TextView latitudeValue;
+    TextView longitudeValue;
+
 
     private static final String TAG = "MainActivity";
     SurfaceView surfaceView;
@@ -66,6 +79,17 @@ public class MainActivity extends AppCompatActivity {
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        xAxisValue = (TextView) findViewById(R.id.xAxisValue);
+        yAxisValue = (TextView)findViewById(R.id.yAxisValue);
+        zAxisValue = (TextView)findViewById(R.id.zAxisValue);
+        headingValue = (TextView)findViewById(R.id.headingValue);
+        rollValue = (TextView)findViewById(R.id.rollValue);
+        pitchValue = (TextView)findViewById(R.id.pitchValue);
+        altitudeValue = (TextView)findViewById(R.id.altitudeValue);
+        longitudeValue = (TextView)findViewById(R.id.longitudeValue);
+        latitudeValue = (TextView)findViewById(R.id.latitudeValue);
+
+
 
 
     }
@@ -78,9 +102,13 @@ public class MainActivity extends AppCompatActivity {
             longitude = location.getLongitude();
             altitude = location.getAltitude();
 
-            Log.d(TAG, "latitude: " + latitude);
-            Log.d(TAG, "longitude: " + longitude);
-            Log.d(TAG, "altitude: " + altitude);
+//            Log.d(TAG, "latitude: " + latitude);
+//            Log.d(TAG, "longitude: " + longitude);
+//            Log.d(TAG, "altitude: " + altitude);
+
+            longitudeValue.setText(String.valueOf(longitude));
+            latitudeValue.setText(String.valueOf(latitude));
+            altitudeValue.setText(String.valueOf(altitude));
 
 
         }
@@ -114,6 +142,11 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "pitchAngel: " + String.valueOf(pitchAngel));
 //                Log.d(TAG, "rollAngel: " + String.valueOf(rollAngel));
 
+                headingValue.setText(String.valueOf(headingAngel));
+                pitchValue.setText(String.valueOf(pitchValue));
+                rollValue.setText(String.valueOf(rollValue));
+
+
             } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 xAxis = event.values[0];
                 yAxis = event.values[1];
@@ -121,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "xAxis: " + xAxis);
 //                Log.d(TAG, "yAxis: " + yAxis);
 //                Log.d(TAG, "zAxis: " + zAxis);
+
+                xAxisValue.setText(String.valueOf(xAxis));
+                yAxisValue.setText(String.valueOf(yAxis));
+                zAxisValue.setText(String.valueOf(zAxis));
             }
         }
 
