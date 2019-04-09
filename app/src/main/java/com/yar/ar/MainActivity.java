@@ -143,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "rollAngel: " + String.valueOf(rollAngel));
 
                 headingValue.setText(String.valueOf(headingAngel));
-                pitchValue.setText(String.valueOf(pitchValue));
-                rollValue.setText(String.valueOf(rollValue));
+                pitchValue.setText(String.valueOf(pitchAngel));
+                rollValue.setText(String.valueOf(rollAngel));
 
 
             } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
