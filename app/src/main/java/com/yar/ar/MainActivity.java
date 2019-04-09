@@ -1,12 +1,17 @@
 package com.yar.ar;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.constraint.solver.widgets.Snapshot;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,10 +40,9 @@ public class MainActivity extends AppCompatActivity {
     float zAxis;
 
     LocationManager locationManager;
-
-
-
-
+    double latitude;
+    double longitude;
+    double altitude;
 
 
     @Override
@@ -59,17 +63,57 @@ public class MainActivity extends AppCompatActivity {
         orientationSensor = Sensor.TYPE_ORIENTATION;
         accelerometerSensor = Sensor.TYPE_ACCELEROMETER;
 
-
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
 
 
     }
 
 
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            altitude = location.getAltitude();
+
+            Log.d(TAG, "latitude: " + latitude);
+            Log.d(TAG, "longitude: " + longitude);
+            Log.d(TAG, "altitude: " + altitude);
+
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
 
     final SensorEventListener sensorEvenetListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            if (event.sensor.getType() == Sensor.TYPE_ORIENTATION){
+            if (event.sensor.getType() == Sensor.TYPE_ORIENTATION) {
                 headingAngel = event.values[0];
                 pitchAngel = event.values[1];
                 rollAngel = event.values[2];
@@ -78,13 +122,13 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "pitchAngel: " + String.valueOf(pitchAngel));
 //                Log.d(TAG, "rollAngel: " + String.valueOf(rollAngel));
 
-            }else  if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 xAxis = event.values[0];
                 yAxis = event.values[1];
                 zAxis = event.values[2];
-                Log.d(TAG, "xAxis: " + xAxis);
-                Log.d(TAG, "yAxis: " + yAxis);
-                Log.d(TAG, "zAxis: " + zAxis);
+//                Log.d(TAG, "xAxis: " + xAxis);
+//                Log.d(TAG, "yAxis: " + yAxis);
+//                Log.d(TAG, "zAxis: " + zAxis);
             }
         }
 
@@ -105,6 +149,18 @@ public class MainActivity extends AppCompatActivity {
 
         sensorManager.registerListener(sensorEvenetListener, sensorManager.getDefaultSensor(accelerometerSensor),
                 SensorManager.SENSOR_DELAY_NORMAL);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 2, locationListener);
     };
 
 
@@ -113,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
 
         sensorManager.unregisterListener(sensorEvenetListener);
+        locationManager.removeUpdates(locationListener);
 
         if (inPreview){
             camera.stopPreview();
