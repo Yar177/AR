@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,11 +71,17 @@ public class MainActivity extends AppCompatActivity {
                 pitchAngel = event.values[1];
                 rollAngel = event.values[2];
 
-                Log.d(TAG, "headingAngel: " + String.valueOf(headingAngel));
-                Log.d(TAG, "pitchAngel: " + String.valueOf(pitchAngel));
-                Log.d(TAG, "rollAngel: " + String.valueOf(rollAngel));
+//                Log.d(TAG, "headingAngel: " + String.valueOf(headingAngel));
+//                Log.d(TAG, "pitchAngel: " + String.valueOf(pitchAngel));
+//                Log.d(TAG, "rollAngel: " + String.valueOf(rollAngel));
+
             }else  if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
                 xAxis = event.values[0];
+                yAxis = event.values[1];
+                zAxis = event.values[2];
+                Log.d(TAG, "xAxis: " + xAxis);
+                Log.d(TAG, "yAxis: " + yAxis);
+                Log.d(TAG, "zAxis: " + zAxis);
             }
         }
 
